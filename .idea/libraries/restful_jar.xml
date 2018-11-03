@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="restful-jar">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/gson-2.8.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/org.restlet.jar!/" />
+      <root url="jar://$PROJECT_DIR$/mongo-java-driver-3.0.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
