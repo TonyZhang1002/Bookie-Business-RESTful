@@ -36,4 +36,9 @@ public class UserInfo {
    public float getBalance() {
       return balance;
    }
+
+   public float changeBalance (float a) {
+      this.balance += a;
+      return balance;
+   }
 }

@@ -2,12 +2,12 @@ package service.bookie;
 
 import com.mongodb.*;
 import service.core.AuthInfo;
+import service.core.BetInfo;
 import service.core.BookieService;
 
 import service.core.UserInfo;
 
 import java.io.IOException;
-import java.util.Date;
 
 public class LocalBookieService implements BookieService {
    /*
@@ -51,6 +51,7 @@ public class LocalBookieService implements BookieService {
       document.put("age", userInfo.getAge());
       document.put("email", userInfo.getEmail());
       document.put("password", userInfo.getPassword());
+      document.put("balance", 0);
       table.insert(document);
       mongo.close();
 
@@ -80,5 +81,60 @@ public class LocalBookieService implements BookieService {
       mongo.close();
       return false;
    }
+
+   @Override
+   public boolean bet(BetInfo betInfo) {
+      MongoClient mongo = new MongoClient("localhost", 27017);
+      DB db = mongo.getDB("usersdb");
+      DBCollection table = db.getCollection("user");
+
+      /**** Update ****/
+      // search document where name="mkyong" and update it with new values
+      BasicDBObject query = new BasicDBObject();
+      query.put("email", betInfo.getAcountEmail());
+      DBCursor cursor = table.find(query);
+
+      while (cursor.hasNext()) {
+         int a = (int)cursor.next().get("balance");
+
+         // Generate a random number from (-50,50]
+         // TODO: Need to change to a real betting result later
+         final long l = System.currentTimeMillis();
+         final int i = (int)( l % 100 ) - 50;
+         a += i;
+
+         BasicDBObject newDocument = new BasicDBObject();
+         newDocument.put("balance", a);
+
+         BasicDBObject updateObj = new BasicDBObject();
+         updateObj.put("$set", newDocument);
+
+         table.update(query, updateObj);
+         mongo.close();
+         return true;
+      }
+      mongo.close();
+      return false;
+   }
+
+   @Override
+   public int getCurrentBalance(AuthInfo authInfo) {
+      MongoClient mongo = new MongoClient("localhost", 27017);
+      DB db = mongo.getDB("usersdb");
+      DBCollection table = db.getCollection("user");
+
+      /**** Find whether there are existing users****/
+      BasicDBObject searchQuery = new BasicDBObject();
+      searchQuery.append("email", authInfo.getEmail());
+      DBCursor cursor = table.find(searchQuery);
+
+      while (cursor.hasNext()) {
+         int a = (int)cursor.next().get("balance");
+         mongo.close();
+         return a;
+      }
+      return 0;
+   }
+
 
 }

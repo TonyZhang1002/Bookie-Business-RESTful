@@ -11,7 +11,7 @@ public class AuthInfo {
    public AuthInfo(String email, String password) {
       this.email = email;
       this.password = password;
-      uniqueID = getRandomString(10);
+      uniqueID = getRandomString(16);
    }
 
    public AuthInfo() {}

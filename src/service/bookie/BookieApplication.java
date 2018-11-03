@@ -7,6 +7,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.routing.Router;
 import service.core.AuthInfo;
+import service.core.BetInfo;
 import service.core.UserInfo;
 
 import java.util.HashMap;
@@ -78,6 +79,43 @@ public class BookieApplication extends Application{
                   } else response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
                } else response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             } else response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+         }
+      });
+
+      /*
+      This is a demo implement for betting
+       */
+      router.attach("/user/{uniqueID}/bet", new Restlet() {
+         @Override
+         public void handle(Request request, Response response) {
+            String uniqueID = (String) request.getAttributes().get("uniqueID");
+            if(onlineRecords.containsKey(uniqueID)) {
+               if (request.getMethod().equals(Method.POST)) {
+                  String json = request.getEntityAsText();
+                  BetInfo betInfo = gson.fromJson(json, BetInfo.class);
+                  bookieService.bet(betInfo);
+                  response.setLocationRef(request.getHostRef() + "/user/" + uniqueID + "/bet/" + betInfo.getUniqueBetID());
+               } else response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+            } else response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+         }
+      });
+
+      /*
+      This is a get method to give the client a useful url and auth info
+       */
+      router.attach("/user/{uniqueID}/bet/{uniqueBetID}", new Restlet() {
+         @Override
+         public void handle(Request request, Response response) {
+            String uniqueID = (String) request.getAttributes().get("uniqueID");
+            if(onlineRecords.containsKey(uniqueID)) {
+               response.setStatus(Status.SUCCESS_OK);
+               if (request.getMethod().equals(Method.GET)) {
+                  response.setEntity(gson.toJson(bookieService.getCurrentBalance(onlineRecords.get(uniqueID))), MediaType.APPLICATION_JSON);
+                  response.setStatus(Status.SUCCESS_OK);
+               }
+            } else {
+               response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+            }
          }
       });
 
