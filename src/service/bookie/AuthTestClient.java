@@ -17,7 +17,7 @@ public class AuthTestClient {
       Gson gson = new Gson();
       ClientResource client = new
               ClientResource("http://localhost:7000/login");
-      client.post(gson.toJson(new AuthInfo("z496722204a@gmail.com", "PQR254/1")));
+      client.post(gson.toJson(new AuthInfo("15205944@ucdconnect.ie", "PQR254/1")));
       String location =
               ((Series<NamedValue<String>>)
                       client.

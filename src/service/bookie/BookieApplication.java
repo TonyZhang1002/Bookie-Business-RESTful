@@ -20,13 +20,18 @@ public class BookieApplication extends Application{
       Router router = new Router(getContext());
       LocalBookieService bookieService = new LocalBookieService();
 
+      /*
+      This is a post method to tell if the client can login
+       */
       router.attach("/login", new Restlet() {
          public void handle(Request request, Response response) {
             if (request.getMethod().equals(Method.POST)) {
                String json = request.getEntityAsText();
                AuthInfo authInfo = gson.fromJson(json, AuthInfo.class);
+               // If login is true (find matching email and password)
                if (bookieService.login(authInfo)) {
                   if (!onlineRecords.containsKey(authInfo.getUniqueID())) {
+                     // Put the user online record
                      onlineRecords.put(authInfo.getUniqueID(), authInfo);
                      response.setLocationRef(request.getHostRef() + "/user/" + authInfo.getUniqueID());
                   } else response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
@@ -35,6 +40,9 @@ public class BookieApplication extends Application{
          }
       });
 
+      /*
+      This is a get method to give the client a useful url and auth info
+       */
       router.attach("/user/{uniqueID}", new Restlet() {
          @Override
          public void handle(Request request, Response response) {
@@ -51,16 +59,23 @@ public class BookieApplication extends Application{
          }
       });
 
+      /*
+      This is a post method to register user
+       */
       router.attach("/registry", new Restlet() {
          @Override
          public void handle(Request request, Response response) {
             if (request.getMethod().equals(Method.POST)) {
                String json = request.getEntityAsText();
                UserInfo userInfo = gson.fromJson(json, UserInfo.class);
-               AuthInfo authInfo = bookieService.registryUser(userInfo);
-               if(!onlineRecords.containsKey(authInfo.getUniqueID())) {
-                  onlineRecords.put(authInfo.getUniqueID(), authInfo);
-                  response.setLocationRef(request.getHostRef()+"/user/"+authInfo.getUniqueID());
+               // If not exist this email
+               if(!bookieService.ifExist(userInfo)) {
+                  // Then register the user
+                  AuthInfo authInfo = bookieService.registryUser(userInfo);
+                  if (!onlineRecords.containsKey(authInfo.getUniqueID())) {
+                     onlineRecords.put(authInfo.getUniqueID(), authInfo);
+                     response.setLocationRef(request.getHostRef() + "/user/" + authInfo.getUniqueID());
+                  } else response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
                } else response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             } else response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
          }

@@ -16,7 +16,7 @@ public class RegisterTestClient {
       Gson gson = new Gson();
       ClientResource client = new
               ClientResource("http://localhost:7000/registry");
-      client.post(gson.toJson(new UserInfo("Tony Zhang", 22, "PQR253/1", "z496722204@gmail.com")));
+      client.post(gson.toJson(new UserInfo("Tony Zhang", 22, "PQR253/1", "15205944@ucdconnect.ie")));
       String location =
               ((Series<NamedValue<String>>)
                       client.
