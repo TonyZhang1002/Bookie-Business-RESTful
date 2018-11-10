@@ -7,8 +7,6 @@ import service.core.BookieService;
 
 import service.core.UserInfo;
 
-import java.io.IOException;
-
 public class LocalBookieService implements BookieService {
    /*
    This is used to define whether the client have correct email and password
@@ -38,7 +36,7 @@ public class LocalBookieService implements BookieService {
    This is used to register and put user info into the database
     */
    @Override
-   public AuthInfo registryUser(UserInfo userInfo) {
+   public void registryUser(UserInfo userInfo){
 
       MongoClient mongo = new MongoClient("localhost", 27017);
       DB db = mongo.getDB("usersdb");
@@ -54,10 +52,6 @@ public class LocalBookieService implements BookieService {
       document.put("balance", 0);
       table.insert(document);
       mongo.close();
-
-      // Return the auth info
-      AuthInfo newAuthInfo = new AuthInfo(userInfo.getEmail(), userInfo.getPassword());
-      return newAuthInfo;
    }
 
    /*
@@ -133,6 +127,7 @@ public class LocalBookieService implements BookieService {
          mongo.close();
          return a;
       }
+      mongo.close();
       return 0;
    }
 

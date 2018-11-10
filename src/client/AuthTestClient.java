@@ -1,6 +1,7 @@
-package service.bookie;
+package client;
 
 import com.google.gson.Gson;
+import org.restlet.data.MediaType;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.util.NamedValue;
@@ -10,15 +11,24 @@ import service.core.BetInfo;
 import service.core.UserInfo;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+
+import static client.MACAddress.getMACAddress;
 
 public class AuthTestClient {
    @SuppressWarnings("unchecked")
    public static void main(String[] args)
-           throws ResourceException, IOException {
+           throws Exception {
       Gson gson = new Gson();
       ClientResource client = new
               ClientResource("http://localhost:7000/login");
-      client.post(gson.toJson(new AuthInfo("15205944@ucdconnect.ie", "PQR253/1")));
+
+      // Get the MAC address
+      InetAddress ia = InetAddress.getLocalHost();
+      String MACAddress = getMACAddress(ia);
+
+      client.post(gson.toJson(new AuthInfo("123@ucdconnect.ie", "PQR253/1", MACAddress)));
       String location =
               ((Series<NamedValue<String>>)
                       client.
@@ -27,18 +37,5 @@ public class AuthTestClient {
                       getFirstValue("Location");
       System.out.println("URL: " + location);
       new ClientResource(location).get().write(System.out);
-      // Now bet
-      System.out.println("\n" + "Bet on url: " + location + "/bet");
-      ClientResource betClient = new
-              ClientResource(location + "/bet");
-      betClient.post(gson.toJson(new BetInfo(20, "15205944@ucdconnect.ie")));
-      String betLocation =
-              ((Series<NamedValue<String>>)
-                      betClient.
-                              getResponseAttributes().
-                              get("org.restlet.http.headers")).
-                      getFirstValue("Location");
-      System.out.println("URL: " + betLocation);
-      new ClientResource(betLocation).get().write(System.out);
    }
 }

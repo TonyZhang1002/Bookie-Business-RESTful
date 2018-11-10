@@ -1,4 +1,4 @@
-package service.bookie;
+package client;
 
 import com.google.gson.Gson;
 import org.restlet.resource.ClientResource;
@@ -16,14 +16,6 @@ public class RegisterTestClient {
       Gson gson = new Gson();
       ClientResource client = new
               ClientResource("http://localhost:7000/registry");
-      client.post(gson.toJson(new UserInfo("Tony Zhang", 22, "PQR253/1", "15205944@ucdconnect.ie")));
-      String location =
-              ((Series<NamedValue<String>>)
-                      client.
-                              getResponseAttributes().
-                              get("org.restlet.http.headers")).
-                      getFirstValue("Location");
-      System.out.println("URL: " + location);
-      new ClientResource(location).get().write(System.out);
+      client.post(gson.toJson(new UserInfo("zqy", 22, "PQR253/1", "15205944@ucdconnect.ie")));
    }
 }

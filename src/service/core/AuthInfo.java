@@ -7,11 +7,13 @@ public class AuthInfo {
    private String email;
    private String password;
    private String uniqueID;
+   private String MACAddress;
 
-   public AuthInfo(String email, String password) {
+   public AuthInfo(String email, String password, String MACAddress) {
       this.email = email;
       this.password = password;
       uniqueID = getRandomString(16);
+      this.MACAddress = MACAddress;
    }
 
    public AuthInfo() {}
@@ -28,9 +30,13 @@ public class AuthInfo {
       return uniqueID;
    }
 
+   public String getMACAddress() {
+      return MACAddress;
+   }
+
    /*
-      Use to generate random uniqueID
-       */
+         Use to generate random uniqueID
+          */
    public static String getRandomString(int length) {
       String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
       Random random = new Random();
